@@ -3,10 +3,10 @@ package examen2;
 import javax.swing.JFrame;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.Color;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.LinkedList;
 
 public class FlappyKoopa extends JFrame implements Runnable, KeyListener
 {
@@ -21,21 +21,32 @@ public class FlappyKoopa extends JFrame implements Runnable, KeyListener
     private Graphics dbg;
     //Se declaran variables tipo int
     private int score;
+    private int velKoopaX;
+    private int velKoopaY;
+    private int gravedad;
+    private int contBoton;
     //Se declaran variables tipo long
     private long tiempoActual;
     private long tiempoInicial;
     //Se declaran variables tipo Pajaro
     private Pajaro koopa;
     //Se declaran variables tipo Planta
-    private Planta carnivora;
+    private Planta plantaArriba;
+    private Planta plantaAbajo;
     //Se declaran variables tipo Animacion
     private Animacion animKoopa;
     private Animacion animCarnivora;
     //Se declaran variables tipo SoundClip
     private SoundClip musicaFondo;
+    private SoundClip salto;
     //Se declaran variables tipo boolean
     private boolean pausa;
     private boolean gameOver;
+    private boolean boton;
+    private boolean brincando;
+    //Se declaran variables Linked list
+    private LinkedList plantasArriba;
+    private LinkedList plantasAbajo;
     
     
     
@@ -43,17 +54,29 @@ public class FlappyKoopa extends JFrame implements Runnable, KeyListener
        
         //Se inicializan variables
         score=0;
+        velKoopaX=0;
+        velKoopaY=5;
+        gravedad=2;
+        boton=false;
+        brincando=false;
+        plantasArriba= new LinkedList();
+        plantasAbajo= new LinkedList();
         
         //Se cargan imagenes
-        Image Koopa1 = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("images/fb1.gif"));
-        Image Koopa2 = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("images/fb2.gif"));
-        Image Koopa3 = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("images/fb3.gif"));
-        Image Koopa4 = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("images/fb4.gif"));
-        Image Koopa5 = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("images/fb1.gif"));
-        Image Koopa6 = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("images/fb2.gif"));
-        Image Koopa7 = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("images/fb3.gif"));
-        Image Koopa8 = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("images/fb4.gif"));
-        Image Koopa9 = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("images/fb1.gif"));
+        
+        background = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("images/fondo.png"));
+        ImagenPausa= Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("images/pausa.gif"));
+        
+        // Carga personaje bueno
+        Image Koopa1 = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("images/k0.gif"));
+        Image Koopa2 = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("images/k1.gif"));
+        Image Koopa3 = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("images/k2.gif"));
+        Image Koopa4 = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("images/k3.gif"));
+        Image Koopa5 = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("images/k4.gif"));
+        Image Koopa6 = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("images/k5.gif"));
+        Image Koopa7 = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("images/k6.gif"));
+        Image Koopa8 = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("images/k7.gif"));
+        Image Koopa9 = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("images/k8.gif"));
         
         animKoopa= new Animacion();
         animKoopa.sumaCuadro(Koopa1,100);
@@ -68,8 +91,29 @@ public class FlappyKoopa extends JFrame implements Runnable, KeyListener
         
         koopa=new Pajaro(600,300,animKoopa);
         
+        //Carga plantas
+        Image planta0 = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("images/p0.gif"));
+        Image planta1 = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("images/p1.gif"));
+        Image planta2 = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("images/p2.gif"));
+        Image planta3 = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("images/p3.gif"));
+        Image planta4 = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("images/p4.gif"));
+        Image planta5 = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("images/p5.gif"));
+        Image planta6 = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("images/p6.gif"));
+        Image planta7 = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("images/p7.gif"));
+        Image planta8 = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("images/p8.gif"));
+        Image planta9 = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("images/p9.gif"));
+        Image planta10 = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("images/p10.gif"));
+        Image planta11 = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("images/p11.gif"));
+        Image planta12 = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("images/p12.gif"));
+        Image planta13 = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("images/p13.gif"));
+        Image planta14 = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("images/p14.gif"));
+        Image planta15 = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("images/p15.gif"));
+        Image planta16 = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("images/p16.gif"));
+      
+        //Cargan Sonidos
+        salto = new SoundClip("sounds/salto.wav");
+        
         //Caracteristicas JFrame
-        setBackground(Color.white);
         setSize(1200,600);
         addKeyListener(this);
         
@@ -113,6 +157,18 @@ public class FlappyKoopa extends JFrame implements Runnable, KeyListener
             long tiempoTranscurrido = System.currentTimeMillis() - tiempoActual;
             tiempoActual += tiempoTranscurrido;
             koopa.getAnimacion().actualiza(tiempoTranscurrido);
+            
+            //movimiento pajaro
+            if(!boton){
+                
+                koopa.setPosY(koopa.getPosY() + (gravedad * velKoopaY));
+            } 
+            else{
+                
+                koopa.setPosY(koopa.getPosY() - (gravedad * velKoopaY));
+            } 
+            koopa.setPosX(koopa.getPosX() + velKoopaX);
+           
             
         }
         
@@ -160,9 +216,15 @@ public class FlappyKoopa extends JFrame implements Runnable, KeyListener
         
         public void paint1(Graphics g){
             
+            g.drawImage(background, 0, 0, this);
+            
             if(koopa != null){
                 
                 g.drawImage(koopa.getAnimacion().getImagen(), koopa.getPosX(), koopa.getPosY(), this);
+            }
+            if(pausa){
+                
+                g.drawImage(ImagenPausa, 450, 250, this);
             }
         }
         
@@ -176,13 +238,15 @@ public class FlappyKoopa extends JFrame implements Runnable, KeyListener
      */
     public void keyPressed(KeyEvent e) {
         
-       if (e.getKeyCode() == KeyEvent.VK_RIGHT) {    //Presiono flecha derecha
+       if (e.getKeyCode() == KeyEvent.VK_UP) {    //Presiono flecha arriba
                 
-                    
+            boton=true;
+            contBoton=0;
+            salto.play();
        } 
        else if (e.getKeyCode() == KeyEvent.VK_P){
                 
-       pausa=!pausa;
+            pausa=!pausa;
        }
     }
 
@@ -210,6 +274,7 @@ public class FlappyKoopa extends JFrame implements Runnable, KeyListener
     
     public void keyReleased(KeyEvent e) {
         
+        boton=false;
     }
 }
 
